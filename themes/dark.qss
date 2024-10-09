@@ -1,0 +1,16 @@
+/* Dark Theme */
+QWidget {
+    background-color: #2b2b2b;
+    color: #f0f0f0;
+}
+
+QTreeView {
+    background-color: #3c3c3c;
+    color: #dcdcdc;
+}
+
+QPlainTextEdit {
+    background-color: #2e2e2e;
+    color: #f0f0f0;
+    border: 1px solid #444444;
+}

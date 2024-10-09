@@ -1,0 +1,16 @@
+/* Light Theme */
+QWidget {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+QTreeView {
+    background-color: #f0f0f0;
+    color: #333333;
+}
+
+QPlainTextEdit {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #cccccc;
+}
