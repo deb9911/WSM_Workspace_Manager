@@ -1,21 +1,25 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QApplication, QHBoxLayout, QListWidget, QListWidgetItem
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QApplication, QHBoxLayout, QListWidget, QListWidgetItem, QLabel
 from PyQt5.QtCore import Qt, QPoint, QSize, QPropertyAnimation, QRect, QEasingCurve
-from PyQt5.QtGui import QGuiApplication, QIcon
+from PyQt5.QtGui import QGuiApplication, QIcon, QPixmap
 import json
 import os
-
+import platform
+import glob
 
 class Taskbar(QWidget):
     def __init__(self, show_main_window_callback):
         super().__init__()
         self.setWindowTitle("Workspace Taskbar")
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.FramelessWindowHint)
+        self.is_minimized = False
+        self.saved_geometry = None  # Save full geometry for restoration
+        self.minimized_widget = None  # Reference to the minimized widget
 
-        # Initialize in horizontal expanded form
         self.init_horizontal_expanded()
 
-        # Main Layout
+        # Main layout
         layout = QHBoxLayout()
+        layout.setContentsMargins(5, 5, 5, 5)  # Add margin to prevent shrinking
 
         # Manager Button
         self.manager_button = QPushButton("Manager")
@@ -25,6 +29,10 @@ class Taskbar(QWidget):
         self.drawer_button = QPushButton("Workspace Drawer")
         self.drawer_button.clicked.connect(self.toggle_drawer)
 
+        # Minimize Button
+        self.minimize_button = QPushButton("▼")  # Arrow icon for minimize
+        self.minimize_button.clicked.connect(self.toggle_minimize)
+
         # Close Button
         self.close_button = QPushButton("Close")
         self.close_button.clicked.connect(self.close_widget)
@@ -32,43 +40,103 @@ class Taskbar(QWidget):
         # Add buttons to layout
         layout.addWidget(self.manager_button)
         layout.addWidget(self.drawer_button)
+        layout.addWidget(self.minimize_button)
         layout.addWidget(self.close_button)
         self.setLayout(layout)
 
-        # Workspace Drawer (hidden initially)
+        # Workspace Drawer setup
         self.drawer = self.create_drawer()
-        self.drawer.setVisible(False)
+        self.drawer.setVisible(False)  # Hidden initially
         self.drawer_animation = QPropertyAnimation(self.drawer, b"geometry")
         self.drawer_animation.setEasingCurve(QEasingCurve.InOutCubic)
 
     def init_horizontal_expanded(self):
-        """Initialize the widget in a horizontal expanded form at the bottom of the screen."""
-        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        """Initialize the widget in a horizontal expanded form at the bottom of the screen, above the OS taskbar."""
+        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()  # Use availableGeometry to avoid taskbar
         self.setGeometry(0, screen_geometry.height() - 50, screen_geometry.width(), 50)
 
     def create_drawer(self):
         """Create a sliding drawer with a list of installed applications."""
         drawer = QListWidget(self)
-        drawer.setFixedSize(200, 300)  # Set desired drawer size
-        apps = ["App1", "App2", "App3", "App4"]
+        drawer.setFixedSize(200, 300)
+
+        # Retrieve applications
+        apps = self.get_installed_applications()
         for app in apps:
             item = QListWidgetItem(app)
             drawer.addItem(item)
         return drawer
 
+    def get_installed_applications(self):
+        """Return a list of installed applications, compatible with Windows and Linux."""
+        apps = []
+        if platform.system() == "Windows":
+            start_menu_path = os.path.expandvars(r"%ProgramData%\Microsoft\Windows\Start Menu\Programs")
+            apps = [os.path.splitext(os.path.basename(p))[0] for p in glob.glob(f"{start_menu_path}\\*.lnk")]
+        elif platform.system() == "Linux":
+            app_dirs = ['/usr/share/applications', os.path.expanduser('~/.local/share/applications')]
+            for app_dir in app_dirs:
+                apps += [os.path.splitext(os.path.basename(f))[0] for f in glob.glob(f"{app_dir}/*.desktop")]
+        return apps or ["Sample App1", "Sample App2", "Sample App3"]
+
     def toggle_drawer(self):
         """Toggle the workspace drawer visibility with a slide effect."""
         if self.drawer.isVisible():
+            end_rect = QRect(self.geometry().right(), self.geometry().top(), 0, 300)
             self.drawer_animation.setStartValue(self.drawer.geometry())
-            self.drawer_animation.setEndValue(QRect(self.geometry().right(), self.geometry().top(), 0, 300))
+            self.drawer_animation.setEndValue(end_rect)
+            self.drawer_animation.finished.connect(lambda: self.drawer.setVisible(False))
             self.drawer_animation.start()
-            self.drawer.setVisible(False)
         else:
-            self.drawer.setVisible(True)
+            start_rect = QRect(self.geometry().right(), self.geometry().top(), 0, 300)
             end_rect = QRect(self.geometry().right(), self.geometry().top(), 200, 300)
-            self.drawer_animation.setStartValue(QRect(self.geometry().right(), self.geometry().top(), 0, 300))
+            self.drawer.setGeometry(start_rect)
+            self.drawer.setVisible(True)
+            self.drawer_animation.setStartValue(start_rect)
             self.drawer_animation.setEndValue(end_rect)
             self.drawer_animation.start()
+
+    def toggle_minimize(self):
+        """Minimize the widget to a floating button or restore to full size."""
+        if not self.is_minimized:
+            # Save current geometry and minimize
+            self.saved_geometry = self.geometry()
+            self.hide()  # Hide the main widget
+            self.show_minimized_widget()  # Show minimized widget with icon
+        else:
+            self.restore()  # Restore to previous saved geometry
+
+        self.is_minimized = not self.is_minimized
+
+    def show_minimized_widget(self):
+        """Show a minimized widget with an icon that restores the main widget on click."""
+        self.minimized_widget = QWidget()
+        self.minimized_widget.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        self.minimized_widget.setFixedSize(60, 60)
+
+        # Center minimized widget on the screen, above the taskbar
+        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
+        self.minimized_widget.move(screen_geometry.width() // 2 - 30, screen_geometry.height() - 70)
+
+        # Set up layout with an icon button
+        layout = QVBoxLayout()
+        icon_button = QPushButton()
+        # icon_button.setIcon(QIcon("/mnt/data/image.png"))  # Load the provided icon
+        icon_button.setIcon(QIcon("resources/icons/suraj_icon_210.png"))  # Load the provided icon
+        icon_button.setIconSize(QSize(50, 50))
+        icon_button.clicked.connect(self.restore)  # Restore on click
+        layout.addWidget(icon_button)
+        self.minimized_widget.setLayout(layout)
+        self.minimized_widget.show()
+
+    def restore(self):
+        """Restore the widget to its saved full geometry."""
+        if self.saved_geometry:
+            self.setGeometry(self.saved_geometry)
+            self.show()  # Show main widget
+            self.minimized_widget.hide()  # Hide minimized widget
+            self.minimized_widget.deleteLater()  # Remove minimized widget
+        self.is_minimized = False
 
     def close_widget(self):
         """Close the widget."""
@@ -83,10 +151,12 @@ class Taskbar(QWidget):
         """Enable drag movement and snap to screen edges when near."""
         if event.buttons() == Qt.LeftButton:
             self.move(event.globalPos() - self.drag_position)
-            screen_geometry = QGuiApplication.primaryScreen().geometry()
+            screen_geometry = QGuiApplication.primaryScreen().availableGeometry()  # Available area avoids taskbars
 
-            # Snap to left or right edge if close enough
-            if abs(self.x()) < 20:  # Snap to left edge
+            # Snap to edges when close to them
+            if abs(self.x()) < 20 and abs(self.y()) < 20:  # Snap to top edge
+                self.setGeometry(0, 0, screen_geometry.width(), 50)
+            elif abs(self.x()) < 20:  # Snap to left edge
                 self.setGeometry(0, 0, 50, screen_geometry.height())
             elif abs(self.x() + self.width() - screen_geometry.width()) < 20:  # Snap to right edge
                 self.setGeometry(screen_geometry.width() - 50, 0, 50, screen_geometry.height())
