@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Initial commit. &#10;Basic Workspace Manager.&#10;Integrated custom task bar. &#10;It will act as secondary task bar with some custom features.">
-      <change afterPath="$PROJECT_DIR$/resources/icons/suraj_icon_210.png" afterDir="false" />
+    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization.">
+      <change afterPath="$PROJECT_DIR$/app/clipboard_manager.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/clipboard_notepad.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/taskbar.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/taskbar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,12 +116,21 @@
       <option name="project" value="LOCAL" />
       <updated>1731010748901</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization.">
+      <option name="closed" value="true" />
+      <created>1731085757427</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1731085757427</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit. &#10;Basic Workspace Manager." />
     <MESSAGE value="Initial commit. &#10;Basic Workspace Manager.&#10;Integrated custom task bar. &#10;It will act as secondary task bar with some custom features." />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit. &#10;Basic Workspace Manager.&#10;Integrated custom task bar. &#10;It will act as secondary task bar with some custom features." />
+    <MESSAGE value="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization." />
   </component>
 </project>

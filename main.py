@@ -7,7 +7,7 @@ from app.taskbar import Taskbar
 def main():
     app = QApplication(sys.argv)
     window = MainWindow()
-    # window.show()
+
     taskbar = Taskbar(show_main_window_callback=window.show)
     taskbar.show()
     sys.exit(app.exec_())

@@ -1,10 +1,14 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QApplication, QHBoxLayout, QListWidget, QListWidgetItem, QLabel
-from PyQt5.QtCore import Qt, QPoint, QSize, QPropertyAnimation, QRect, QEasingCurve
-from PyQt5.QtGui import QGuiApplication, QIcon, QPixmap
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QApplication, QHBoxLayout, QListWidget, QListWidgetItem
+from PyQt5.QtCore import Qt, QPoint, QSize, QPropertyAnimation, QRect, QEasingCurve, QTimer
+from PyQt5.QtGui import QGuiApplication, QIcon
 import json
 import os
 import platform
 import glob
+
+from app.clipboard_manager import ClipboardManager
+from app.clipboard_notepad import ClipboardNotepad  # Separate notepad view for clipboard history
+
 
 class Taskbar(QWidget):
     def __init__(self, show_main_window_callback):
@@ -15,22 +19,30 @@ class Taskbar(QWidget):
         self.saved_geometry = None  # Save full geometry for restoration
         self.minimized_widget = None  # Reference to the minimized widget
 
+        # Initialize expanded position
         self.init_horizontal_expanded()
 
-        # Main layout
+        # Clipboard Manager for tracking clipboard history
+        self.clipboard_manager = ClipboardManager()
+
+        # Main layout setup
         layout = QHBoxLayout()
-        layout.setContentsMargins(5, 5, 5, 5)  # Add margin to prevent shrinking
+        layout.setContentsMargins(5, 5, 5, 5)
 
         # Manager Button
         self.manager_button = QPushButton("Manager")
         self.manager_button.clicked.connect(show_main_window_callback)
+
+        # Clipboard Button
+        self.clipboard_button = QPushButton("Clipboard History")
+        self.clipboard_button.clicked.connect(self.show_clipboard_notepad)
 
         # Workspace Drawer Button
         self.drawer_button = QPushButton("Workspace Drawer")
         self.drawer_button.clicked.connect(self.toggle_drawer)
 
         # Minimize Button
-        self.minimize_button = QPushButton("▼")  # Arrow icon for minimize
+        self.minimize_button = QPushButton("▼")
         self.minimize_button.clicked.connect(self.toggle_minimize)
 
         # Close Button
@@ -39,6 +51,7 @@ class Taskbar(QWidget):
 
         # Add buttons to layout
         layout.addWidget(self.manager_button)
+        layout.addWidget(self.clipboard_button)
         layout.addWidget(self.drawer_button)
         layout.addWidget(self.minimize_button)
         layout.addWidget(self.close_button)
@@ -46,14 +59,20 @@ class Taskbar(QWidget):
 
         # Workspace Drawer setup
         self.drawer = self.create_drawer()
-        self.drawer.setVisible(False)  # Hidden initially
+        self.drawer.setVisible(False)
         self.drawer_animation = QPropertyAnimation(self.drawer, b"geometry")
         self.drawer_animation.setEasingCurve(QEasingCurve.InOutCubic)
 
     def init_horizontal_expanded(self):
-        """Initialize the widget in a horizontal expanded form at the bottom of the screen, above the OS taskbar."""
-        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()  # Use availableGeometry to avoid taskbar
+        """Initialize the widget in a horizontal expanded form at the bottom of the screen."""
+        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
         self.setGeometry(0, screen_geometry.height() - 50, screen_geometry.width(), 50)
+
+    def show_clipboard_notepad(self):
+        """Open a new window showing the clipboard history."""
+        clipboard_history = self.clipboard_manager.get_clipboard_history()
+        self.notepad = ClipboardNotepad(clipboard_history)
+        self.notepad.show()
 
     def create_drawer(self):
         """Create a sliding drawer with a list of installed applications."""
@@ -121,7 +140,6 @@ class Taskbar(QWidget):
         # Set up layout with an icon button
         layout = QVBoxLayout()
         icon_button = QPushButton()
-        # icon_button.setIcon(QIcon("/mnt/data/image.png"))  # Load the provided icon
         icon_button.setIcon(QIcon("resources/icons/suraj_icon_210.png"))  # Load the provided icon
         icon_button.setIconSize(QSize(50, 50))
         icon_button.clicked.connect(self.restore)  # Restore on click
@@ -151,7 +169,7 @@ class Taskbar(QWidget):
         """Enable drag movement and snap to screen edges when near."""
         if event.buttons() == Qt.LeftButton:
             self.move(event.globalPos() - self.drag_position)
-            screen_geometry = QGuiApplication.primaryScreen().availableGeometry()  # Available area avoids taskbars
+            screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
 
             # Snap to edges when close to them
             if abs(self.x()) < 20 and abs(self.y()) < 20:  # Snap to top edge
