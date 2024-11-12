@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added.">
-      <change afterPath="$PROJECT_DIR$/launcher_entries.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/clipboard.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/cross_taskbar_close.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/launcher.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/manager.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/minimize_taskbar.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/taskbar.qss" afterDir="false" />
+    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;1. Added launcher_entries.json for application launcher. Enhanced with some property update.">
+      <change afterPath="$PROJECT_DIR$/resources/icons/url_list.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/taskbar.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/taskbar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +130,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731092103099</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Changes added as, &#10;1. Added launcher_entries.json for application launcher. Enhanced with some property update.">
+      <option name="closed" value="true" />
+      <created>1731403285783</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1731403285783</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -145,6 +146,7 @@
     <MESSAGE value="Initial commit. &#10;Basic Workspace Manager.&#10;Integrated custom task bar. &#10;It will act as secondary task bar with some custom features." />
     <MESSAGE value="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization." />
     <MESSAGE value="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added." />
+    <MESSAGE value="Changes added as, &#10;1. Added launcher_entries.json for application launcher. Enhanced with some property update." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;1. Added launcher_entries.json for application launcher. Enhanced with some property update." />
   </component>
 </project>

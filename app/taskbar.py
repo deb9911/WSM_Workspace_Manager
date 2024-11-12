@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QPushButton, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy,
-    QGraphicsDropShadowEffect, QMenu, QAction, QFileDialog, QDialog, QFormLayout, QLineEdit, QLabel
+    QGraphicsDropShadowEffect, QMenu, QAction, QFileDialog, QDialog, QFormLayout, QLineEdit, QLabel, QTextEdit, QDialogButtonBox
 )
 from PyQt5.QtCore import Qt, QPoint, QSize, QProcess
 from PyQt5.QtGui import QGuiApplication, QIcon, QColor, QLinearGradient, QPainter, QBrush
@@ -18,7 +18,6 @@ class AddLauncherEntryDialog(QDialog):
         self.setFixedSize(400, 200)
 
         layout = QFormLayout()
-
         self.name_field = QLineEdit(self)
         self.path_field = QLineEdit(self)
         self.parameters_field = QLineEdit(self)
@@ -28,7 +27,7 @@ class AddLauncherEntryDialog(QDialog):
 
         layout.addRow("Entry Name:", self.name_field)
         layout.addRow("Executable Path:", self.path_field)
-        layout.addRow("", browse_button)  # Position the browse button next to the path field
+        layout.addRow("", browse_button)
         layout.addRow("Parameters:", self.parameters_field)
 
         self.add_button = QPushButton("Add")
@@ -56,6 +55,34 @@ class AddLauncherEntryDialog(QDialog):
         }
 
 
+class URLDialog(QDialog):
+    def __init__(self, urls, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Open URLs")
+        self.setFixedSize(400, 300)
+
+        layout = QVBoxLayout()
+        self.url_text = QTextEdit(self)
+        self.url_text.setReadOnly(True)
+        self.url_text.setPlainText("\n".join(urls))
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Close)
+        button_box.accepted.connect(self.save_urls)
+        button_box.rejected.connect(self.reject)
+
+        layout.addWidget(QLabel("Open URLs:"))
+        layout.addWidget(self.url_text)
+        layout.addWidget(button_box)
+        self.setLayout(layout)
+
+    def save_urls(self):
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save URLs", "", "Text Files (*.txt)")
+        if file_path:
+            with open(file_path, "w") as file:
+                file.write(self.url_text.toPlainText())
+        self.accept()
+
+
 class Taskbar(QWidget):
     def __init__(self, show_main_window_callback):
         super().__init__()
@@ -64,12 +91,10 @@ class Taskbar(QWidget):
 
         self.is_minimized = False
         self.saved_geometry = None
-        self.minimized_widget = None
         self.dragging = False
         self.is_vertical = False
 
         self.init_horizontal_expanded()
-
         self.clipboard_manager = ClipboardManager()
 
         self.main_layout = QHBoxLayout()
@@ -78,28 +103,13 @@ class Taskbar(QWidget):
         button_size = QSize(40, 40)
         icon_size = QSize(24, 24)
 
+        # Creating buttons
         self.manager_button = self.create_button("resources/icons/manager.png", button_size, icon_size, show_main_window_callback)
         self.clipboard_button = self.create_button("resources/icons/clipboard.png", button_size, icon_size, self.show_clipboard_notepad)
+        self.launcher_button = self.create_launcher_button(button_size, icon_size)
+        self.url_list_button = self.create_button("resources/icons/url_list.png", button_size, icon_size, self.show_url_list)
         self.resize_button = self.create_button("resources/icons/minimize_taskbar.png", button_size, icon_size, self.toggle_minimize)
         self.close_button = self.create_button("resources/icons/cross_taskbar_close.png", button_size, icon_size, self.close_widget)
-
-        button_size = QSize(40, 40)
-        icon_size = QSize(24, 24)
-
-        # self.launcher_button = QPushButton("Launcher")
-        self.launcher_button = QPushButton()
-        self.launcher_menu = QMenu()
-        self.launcher_button.setIcon(QIcon("resources/icons/launcher.png"))
-        self.launcher_button.setMenu(self.launcher_menu)
-        self.launcher_button.setFixedSize(button_size)
-        self.launcher_button.setIconSize(icon_size)
-
-        self.load_launcher_entries()
-
-        add_entry_action = QAction("+ Add New Entry", self)
-        add_entry_action.triggered.connect(self.show_add_entry_dialog)
-        self.launcher_menu.addAction(add_entry_action)
-        self.launcher_menu.addSeparator()
 
         self.add_buttons_to_layout()
         self.setLayout(self.main_layout)
@@ -113,38 +123,68 @@ class Taskbar(QWidget):
         button.clicked.connect(callback)
         return button
 
-    def load_launcher_entries(self):
-        self.launcher_entries = []
+    def create_launcher_button(self, button_size, icon_size):
+        launcher_button = QPushButton()
+        launcher_button.setFixedSize(button_size)
+        launcher_button.setIcon(QIcon("resources/icons/launcher.png"))
+        launcher_button.setIconSize(icon_size)
+
+        launcher_menu = QMenu()
+        add_entry_action = QAction("+ Add New Entry", self)
+        add_entry_action.triggered.connect(self.show_add_entry_dialog)
+        launcher_menu.addAction(add_entry_action)
+        launcher_menu.addSeparator()
+
+        launcher_button.setMenu(launcher_menu)
+        self.load_launcher_entries(launcher_menu)
+        return launcher_button
+
+    def load_launcher_entries(self, launcher_menu):
         try:
             with open("launcher_entries.json", "r") as file:
                 self.launcher_entries = json.load(file)
         except (FileNotFoundError, json.JSONDecodeError):
-            pass
+            self.launcher_entries = []
 
         for entry in self.launcher_entries:
-            self.add_launcher_entry_to_menu(entry)
+            self.add_launcher_entry_to_menu(entry, launcher_menu)
 
-    def save_launcher_entries(self):
-        with open("launcher_entries.json", "w") as file:
-            json.dump(self.launcher_entries, file, indent=4)
-
-    def add_launcher_entry_to_menu(self, entry):
+    def add_launcher_entry_to_menu(self, entry, launcher_menu):
         action = QAction(entry["name"], self)
         action.triggered.connect(lambda _, e=entry: self.execute_entry(e))
-        self.launcher_menu.addAction(action)
+        launcher_menu.addAction(action)
 
     def show_add_entry_dialog(self):
         dialog = AddLauncherEntryDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             entry_data = dialog.get_entry_data()
             self.launcher_entries.append(entry_data)
-            self.add_launcher_entry_to_menu(entry_data)
             self.save_launcher_entries()
+            self.add_launcher_entry_to_menu(entry_data, self.launcher_button.menu())
+
+    def save_launcher_entries(self):
+        with open("launcher_entries.json", "w") as file:
+            json.dump(self.launcher_entries, file, indent=4)
 
     def execute_entry(self, entry):
         process = QProcess(self)
         args = entry["parameters"].split() if entry["parameters"] else []
         process.start(entry["path"], args)
+
+    def show_url_list(self):
+        urls = self.get_open_browser_urls()
+        if urls:
+            url_dialog = URLDialog(urls, self)
+            url_dialog.exec_()
+
+    def get_open_browser_urls(self):
+        """Fetch open URLs from supported browsers. Placeholder implementation."""
+        urls = [
+            "https://example.com",
+            "https://anotherexample.com",
+            "https://somesite.com"
+        ]
+        return urls
 
     def init_horizontal_expanded(self):
         screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
@@ -162,7 +202,7 @@ class Taskbar(QWidget):
                 background-color: #d3d3d3;
             }
         """
-        for button in [self.manager_button, self.clipboard_button, self.resize_button, self.close_button, self.launcher_button]:
+        for button in [self.manager_button, self.clipboard_button, self.launcher_button, self.url_list_button, self.resize_button, self.close_button]:
             button.setStyleSheet(button_style)
 
         shadow_effect = QGraphicsDropShadowEffect(self)
@@ -186,6 +226,7 @@ class Taskbar(QWidget):
         self.main_layout.addWidget(self.manager_button)
         self.main_layout.addWidget(self.clipboard_button)
         self.main_layout.addWidget(self.launcher_button)
+        self.main_layout.addWidget(self.url_list_button)
 
         self.main_layout.addSpacerItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
         self.main_layout.addWidget(self.resize_button)
@@ -285,11 +326,10 @@ class Taskbar(QWidget):
         self.realign_buttons()
 
     def realign_buttons(self):
-        for i in reversed(range(self.main_layout.count())):
-            widget = self.main_layout.itemAt(i).widget()
-            if widget:
-                self.main_layout.removeWidget(widget)
-                widget.setParent(None)
+        while self.main_layout.count():
+            item = self.main_layout.takeAt(0)
+            if item.widget():
+                item.widget().setParent(None)
 
         if self.is_vertical:
             self.main_layout.setDirection(QVBoxLayout.TopToBottom)
