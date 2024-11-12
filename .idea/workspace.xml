@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization.">
-      <change afterPath="$PROJECT_DIR$/app/clipboard_manager.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/clipboard_notepad.py" afterDir="false" />
+    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added.">
+      <change afterPath="$PROJECT_DIR$/launcher_entries.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/icons/clipboard.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/icons/cross_taskbar_close.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/icons/launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/icons/manager.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/icons/minimize_taskbar.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/taskbar.qss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/taskbar.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/taskbar.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -38,15 +43,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.main.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/DebashisBiswas/PycharmProjects/WS_manager/resources/icons"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/DebashisBiswas/PycharmProjects/WS_manager/resources/icons&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\DebashisBiswas\PycharmProjects\WS_manager\resources\icons" />
@@ -124,13 +129,22 @@
       <option name="project" value="LOCAL" />
       <updated>1731085757427</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added.">
+      <option name="closed" value="true" />
+      <created>1731092103099</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1731092103099</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit. &#10;Basic Workspace Manager." />
     <MESSAGE value="Initial commit. &#10;Basic Workspace Manager.&#10;Integrated custom task bar. &#10;It will act as secondary task bar with some custom features." />
     <MESSAGE value="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;1. Resizing as per requirement.&#10;2. Floating widget added. &#10;3. Added png file for easy recognization." />
+    <MESSAGE value="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added." />
   </component>
 </project>
