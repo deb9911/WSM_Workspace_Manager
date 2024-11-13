@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;1. Added url list feature to get all open urls on current systems.">
-      <change afterPath="$PROJECT_DIR$/app/file_indexer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/url_access.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/file_search.png" afterDir="false" />
+    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/taskbar.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/taskbar.py" afterDir="false" />
     </list>
@@ -156,7 +153,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731407793433</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation.">
+      <option name="closed" value="true" />
+      <created>1731438574685</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1731438574685</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -166,6 +171,7 @@
     <MESSAGE value="Changes added as, &#10;1. clipboard_manager.py added. &#10;2. clipboard_notepad.py added." />
     <MESSAGE value="Changes added as, &#10;1. Added launcher_entries.json for application launcher. Enhanced with some property update." />
     <MESSAGE value="Changes added as, &#10;1. Added url list feature to get all open urls on current systems." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;1. Added url list feature to get all open urls on current systems." />
+    <MESSAGE value="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation." />
   </component>
 </project>

@@ -2,9 +2,10 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QPushButton, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy,
     QGraphicsDropShadowEffect, QMenu, QAction, QFileDialog, QDialog, QFormLayout, QLineEdit, QLabel, QTextEdit,
+    QComboBox,
     QDialogButtonBox
 )
-from PyQt5.QtCore import Qt, QSize, QProcess
+from PyQt5.QtCore import Qt, QSize, QPoint, QProcess, pyqtSignal, QThread
 from PyQt5.QtGui import QGuiApplication, QIcon, QColor, QLinearGradient, QPainter, QBrush
 import json
 import os
@@ -13,6 +14,15 @@ from app.clipboard_manager import ClipboardManager
 from app.clipboard_notepad import ClipboardNotepad
 from app.url_access import get_chrome_open_urls, get_edge_open_urls, get_firefox_open_urls
 from app.file_indexer import index_files, load_file_index
+
+
+class FileIndexerThread(QThread):
+    """Thread to handle background file indexing."""
+    finished = pyqtSignal()
+
+    def run(self):
+        index_files([Path.home()])
+        self.finished.emit()
 
 
 class AddLauncherEntryDialog(QDialog):
@@ -144,14 +154,24 @@ class Taskbar(QWidget):
         self.setWindowTitle("Workspace Taskbar")
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.CustomizeWindowHint)
         self.is_minimized = False
-        self.dragging = False
-        self.is_vertical = False
+        self.saved_geometry = None
 
         index_files([Path.home()])
-
         self.init_horizontal_expanded()
         self.clipboard_manager = ClipboardManager()
 
+        self.notepad = None
+
+        # Start background file indexing after taskbar launch
+        self.indexer_thread = FileIndexerThread()
+        self.indexer_thread.finished.connect(self.on_file_indexing_finished)
+        self.indexer_thread.start()
+
+        # Set up layout and UI components
+        self.init_ui(show_main_window_callback)
+        self.apply_styles()
+
+    def init_ui(self, show_main_window_callback):
         self.main_layout = QHBoxLayout()
         self.main_layout.setContentsMargins(5, 5, 5, 5)
 
@@ -171,6 +191,12 @@ class Taskbar(QWidget):
                                                 self.toggle_minimize)
         self.close_button = self.create_button("resources/icons/cross_taskbar_close.png", button_size, icon_size,
                                                self.close_widget)
+
+        # Add relocation dropdown
+        self.relocation_dropdown = QComboBox()
+        self.relocation_dropdown.addItems(["↓", "↑"])
+        self.relocation_dropdown.currentTextChanged.connect(self.relocate_taskbar)
+        self.main_layout.addWidget(self.relocation_dropdown)
 
         self.add_buttons_to_layout()
         self.setLayout(self.main_layout)
@@ -246,11 +272,28 @@ class Taskbar(QWidget):
         urls.extend(get_firefox_open_urls())
         return urls
 
+    def relocate_taskbar(self, position):
+        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
+        if position == "↑":
+            self.setGeometry(0, 0, screen_geometry.width(), 50)
+            self.set_horizontal_layout()
+        elif position == "↓":
+            self.setGeometry(0, screen_geometry.height() - 50, screen_geometry.width(), 50)
+            self.set_horizontal_layout()
+
     def init_horizontal_expanded(self):
         screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
         self.setGeometry(0, screen_geometry.height() - 50, screen_geometry.width(), 50)
 
     def apply_styles(self):
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        gradient = QLinearGradient(0, 0, 0, self.height())
+        gradient.setColorAt(0, QColor(45, 45, 48))  # Dark gray gradient
+        gradient.setColorAt(1, QColor(30, 30, 32))  # Slightly darker at the bottom
+        p.setBrush(self.backgroundRole(), QBrush(gradient))
+        self.setPalette(p)
+
         button_style = """
             QPushButton {
                 background-color: transparent;
@@ -282,16 +325,37 @@ class Taskbar(QWidget):
 
         self.main_layout.addSpacerItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
         self.main_layout.addWidget(self.resize_button)
+        self.main_layout.addWidget(self.relocation_dropdown)
         self.main_layout.addWidget(self.close_button)
 
+    def set_vertical_layout(self):
+        self.main_layout.setDirection(QVBoxLayout.TopToBottom)
+        self.realign_buttons()
+
+    def set_horizontal_layout(self):
+        self.main_layout.setDirection(QHBoxLayout.LeftToRight)
+        self.realign_buttons()
+
+    def realign_buttons(self):
+        while self.main_layout.count():
+            item = self.main_layout.takeAt(0)
+            if item.widget():
+                item.widget().setParent(None)
+        self.add_buttons_to_layout()
+
     def show_clipboard_notepad(self):
-        clipboard_history = self.clipboard_manager.get_clipboard_history()
-        if not hasattr(self, 'notepad') or not self.notepad.isVisible():
-            self.notepad = ClipboardNotepad(clipboard_history)
-            self.notepad.show()
+        """Show clipboard notepad if not already visible, and handle any unexpected errors."""
+        try:
+            clipboard_history = self.clipboard_manager.get_clipboard_history()
+            if not self.notepad or not self.notepad.isVisible():
+                self.notepad = ClipboardNotepad(clipboard_history)
+                self.notepad.show()
+        except Exception as e:
+            print(f"Error showing ClipboardNotepad: {e}")
 
     def toggle_minimize(self):
         if not self.is_minimized:
+            self.saved_geometry = self.geometry()
             self.hide()
             self.show_minimized_widget()
         else:
@@ -323,3 +387,7 @@ class Taskbar(QWidget):
 
     def close_widget(self):
         self.close()
+
+    def on_file_indexing_finished(self):
+        print("File indexing completed.")
+
