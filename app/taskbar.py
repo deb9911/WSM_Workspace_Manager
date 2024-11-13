@@ -363,11 +363,15 @@ class Taskbar(QWidget):
         self.is_minimized = not self.is_minimized
 
     def show_minimized_widget(self):
-        minimized_widget = QWidget()
-        minimized_widget.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
-        minimized_widget.setFixedSize(60, 60)
-        minimized_widget.move(QGuiApplication.primaryScreen().availableGeometry().width() // 2 - 30,
-                              QGuiApplication.primaryScreen().availableGeometry().height() - 70)
+        # Prevent multiple minimized widgets from being created
+        if hasattr(self, 'minimized_widget') and self.minimized_widget.isVisible():
+            return
+
+        self.minimized_widget = QWidget()
+        self.minimized_widget.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        self.minimized_widget.setFixedSize(60, 60)
+        screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
+        self.minimized_widget.move(screen_geometry.width() // 2 - 30, screen_geometry.height() - 70)
 
         layout = QVBoxLayout()
         icon_button = QPushButton()
@@ -375,15 +379,16 @@ class Taskbar(QWidget):
         icon_button.setIconSize(QSize(50, 50))
         icon_button.clicked.connect(self.restore)
         layout.addWidget(icon_button)
-        minimized_widget.setLayout(layout)
-        minimized_widget.show()
-        self.minimized_widget = minimized_widget
+        self.minimized_widget.setLayout(layout)
+        self.minimized_widget.show()
 
     def restore(self):
-        if hasattr(self, 'minimized_widget'):
-            self.show()
+        if hasattr(self, 'minimized_widget') and self.minimized_widget.isVisible():
             self.minimized_widget.hide()
             self.minimized_widget.deleteLater()
+            del self.minimized_widget  # Ensure the widget is fully removed
+        self.setGeometry(self.saved_geometry)  # Restore original geometry
+        self.show()
 
     def close_widget(self):
         self.close()

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation.">
+    <list default="true" id="3ed7811d-450a-42fa-ba87-0414862756af" name="Changes" comment="Changes added as, &#10;Pre-Release version.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/taskbar.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/taskbar.py" afterDir="false" />
     </list>
@@ -161,7 +161,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731438574685</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Changes added as, &#10;Pre-Release version.">
+      <option name="closed" value="true" />
+      <created>1731509739712</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1731509739712</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -172,6 +180,7 @@
     <MESSAGE value="Changes added as, &#10;1. Added launcher_entries.json for application launcher. Enhanced with some property update." />
     <MESSAGE value="Changes added as, &#10;1. Added url list feature to get all open urls on current systems." />
     <MESSAGE value="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;Added feature for, &#10;a - url list. &#10;b - file search operation." />
+    <MESSAGE value="Changes added as, &#10;Pre-Release version." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes added as, &#10;Pre-Release version." />
   </component>
 </project>
