@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QDialogButtonBox
 )
-from PyQt5.QtCore import Qt, QSize, QPoint, QProcess, pyqtSignal, QThread
+from PyQt5.QtCore import Qt, QSize, QPoint, QProcess, pyqtSignal, QThread, QTimer
 from PyQt5.QtGui import QGuiApplication, QIcon, QColor, QLinearGradient, QPainter, QBrush
 import json
 import os
@@ -155,21 +155,18 @@ class Taskbar(QWidget):
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.CustomizeWindowHint)
         self.is_minimized = False
         self.saved_geometry = None
-
-        index_files([Path.home()])
+        # Initialize UI and other components
         self.init_horizontal_expanded()
         self.clipboard_manager = ClipboardManager()
-
         self.notepad = None
-
-        # Start background file indexing after taskbar launch
-        self.indexer_thread = FileIndexerThread()
-        self.indexer_thread.finished.connect(self.on_file_indexing_finished)
-        self.indexer_thread.start()
-
         # Set up layout and UI components
         self.init_ui(show_main_window_callback)
         self.apply_styles()
+        # Set up and defer file indexing
+        self.indexer_thread = FileIndexerThread()
+        self.indexer_thread.finished.connect(self.on_file_indexing_finished)
+        # Run indexing in the background after the taskbar UI is shown
+        QTimer.singleShot(1000, self.indexer_thread.start)  # Starts indexing 1 second after initialization
 
     def init_ui(self, show_main_window_callback):
         self.main_layout = QHBoxLayout()
