@@ -5,11 +5,19 @@ from app.taskbar import Taskbar
 import os
 
 
+def resource_path(relative_path):
+    """Get the absolute path to a resource in the PyInstaller bundle."""
+    if hasattr(sys, '_MEIPASS'):  # This attribute exists in PyInstaller executables
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.dirname(__file__), relative_path)
+
+
 def main():
     app = QApplication(sys.argv)
 
     # Load the stylesheet (adjust path based on script's directory)
-    stylesheet_path = os.path.join(os.path.dirname(__file__), "static/taskbar.qss")
+    # stylesheet_path = os.path.join(os.path.dirname(__file__), "static/taskbar.qss")
+    stylesheet_path = resource_path("static/taskbar.qss")
     if os.path.exists(stylesheet_path):
         with open(stylesheet_path, "r") as style_file:
             app.setStyleSheet(style_file.read())

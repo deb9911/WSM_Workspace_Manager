@@ -8,12 +8,20 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QSize, QPoint, QProcess, pyqtSignal, QThread, QTimer
 from PyQt5.QtGui import QGuiApplication, QIcon, QColor, QLinearGradient, QPainter, QBrush
 import json
-import os
+import os, sys
 
 from app.clipboard_manager import ClipboardManager
 from app.clipboard_notepad import ClipboardNotepad
 from app.url_access import get_chrome_open_urls, get_edge_open_urls, get_firefox_open_urls
 from app.file_indexer import index_files, load_file_index
+
+
+def resource_path(relative_path):
+    """Get the absolute path to a resource, works for both development and PyInstaller."""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller-specific temporary folder
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 
 class FileIndexerThread(QThread):
@@ -175,18 +183,18 @@ class Taskbar(QWidget):
         button_size = QSize(40, 40)
         icon_size = QSize(24, 24)
 
-        self.manager_button = self.create_button("resources/icons/manager.png", button_size, icon_size,
+        self.manager_button = self.create_button(resource_path("resources/icons/manager.png"), button_size, icon_size,
                                                  show_main_window_callback)
-        self.clipboard_button = self.create_button("resources/icons/clipboard.png", button_size, icon_size,
+        self.clipboard_button = self.create_button(resource_path("resources/icons/clipboard.png"), button_size, icon_size,
                                                    self.show_clipboard_notepad)
         self.launcher_button = self.create_launcher_button(button_size, icon_size)
-        self.url_list_button = self.create_button("resources/icons/url_list.png", button_size, icon_size,
+        self.url_list_button = self.create_button(resource_path("resources/icons/url_list.png"), button_size, icon_size,
                                                   self.show_url_list)
-        self.search_button = self.create_button("resources/icons/file_search.png", button_size, icon_size,
+        self.search_button = self.create_button(resource_path("resources/icons/file_search.png"), button_size, icon_size,
                                                 self.show_search_dialog)
-        self.resize_button = self.create_button("resources/icons/minimize_taskbar.png", button_size, icon_size,
+        self.resize_button = self.create_button(resource_path("resources/icons/minimize_taskbar.png"), button_size, icon_size,
                                                 self.toggle_minimize)
-        self.close_button = self.create_button("resources/icons/cross_taskbar_close.png", button_size, icon_size,
+        self.close_button = self.create_button(resource_path("resources/icons/cross_taskbar_close.png"), button_size, icon_size,
                                                self.close_widget)
 
         # Add relocation dropdown
